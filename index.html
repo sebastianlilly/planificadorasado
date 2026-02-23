@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora Asado</title>
+  <meta name="description" content="Calcula las cantidades perfectas para tu asado" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YJ66T5E0ER"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-YJ66T5E0ER');
+  </script>
+
+
+  <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Asado Perfecto" />
+  <meta property="og:description" content="Calcula las cantidades y organiza tu carrete." />
+  <meta property="og:image" content="https://i.imgur.com/hNDDH4H.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#ec131e",
+            secondary: "#0039a6",
+            "surface-light": "#ffffff",
+            "surface-off": "#f8f6f6",
+            "text-main": "#181111",
+            "text-sub": "#896163",
+          },
+          fontFamily: {
+            sans: ["'Plus Jakarta Sans'", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* --- BARRA SUPERIOR (LOGIN) --- */
+    .barra-usuario {
+      background-color: #1a1a1a;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: flex-end;
+      /* PC: A la derecha */
+      align-items: center;
+      position: relative;
+      z-index: 50;
+      /* Siempre encima */
+    }
+
+    /* Texto Promocional */
+    .texto-promo {
+      color: #ffffff;
+      margin-right: 15px;
+      /* PC: Margen lateral */
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: right;
+    }
+
+    /* Botón Rojo de Netlify */
+    div[data-netlify-identity-button] a {
+      background-color: #D32F2F !important;
+      /* Rojo Asado */
+      color: white !important;
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      font-family: sans-serif;
+      text-transform: uppercase;
+      font-size: 14px;
+      transition: background 0.3s;
+      display: inline-block;
+    }
+
+    div[data-netlify-identity-button] a:hover {
+      background-color: #b71c1c !important;
+      cursor: pointer;
+    }
+
+    /* --- RESPONSIVE (CELULARES) --- */
+    @media (max-width: 600px) {
+      .barra-usuario {
+        flex-direction: column;
+        /* Apilar elementos */
+        justify-content: center;
+        padding: 15px;
+        text-align: center;
+      }
+
+      .texto-promo {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 10px;
+        /* Separación con el botón */
+        width: 100%;
+        line-height: 1.4;
+        text-align: center;
+        /* Centrado en celular */
+      }
+    }
+
+    /* --- ESTILOS GENERALES --- */
+    body {
+      background-color: #f8f6f6;
+      margin: 0;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+      "react/": "https://esm.sh/react@^19.2.3/",
+      "react": "https://esm.sh/react@^19.2.3",
+      "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    }
+  }
+  </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+
+  <div class="barra-usuario">
+    <span class="texto-promo">Hazte parte de la comunidad y recibe un regalo Mercenario</span>
+    <div data-netlify-identity-button></div>
+  </div>
+
+  <div id="zona-mercenaria"
+    style="display: none; background-color: #0039a6; color: white; text-align: center; padding: 15px; font-family: 'Plus Jakarta Sans', sans-serif;">
+
+    <p style="margin: 0 0 10px 0; font-size: 14px;">
+      🎉 ¡Bienvenido a la comunidad! <strong>Elige tu regalo:</strong> <br>
+      <span style="opacity: 0.8; font-size: 12px;">Welcome to the community! <strong>Choose your gift:</strong></span>
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+      <a href="/regalo_es.pdf" target="_blank"
+        style="background-color: white; color: #0039a6; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: 800; text-transform: uppercase; font-size: 12px; display: inline-block;">
+        🇪🇸 Descargar (ES)
+      </a>
+      <a href="/regalo_en.pdf" target="_blank"
+        style="background-color: #1a1a1a; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: 800; text-transform: uppercase; font-size: 12px; display: inline-block;">
+        🇺🇸 Download (EN)
+      </a>
+    </div>
+  </div>
+
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+
+  <script>
+    // Función que controla qué ver
+    const gestionarVisibilidad = (user) => {
+      const zonaRegalo = document.getElementById('zona-mercenaria');
+      const textoPromo = document.querySelector('.texto-promo');
+
+      if (user) {
+        // SI HAY USUARIO: Mostrar regalo, ocultar promo
+        if (zonaRegalo) zonaRegalo.style.display = 'block';
+        if (textoPromo) textoPromo.style.display = 'none';
+      } else {
+        // NO HAY USUARIO: Ocultar regalo, mostrar promo
+        if (zonaRegalo) zonaRegalo.style.display = 'none';
+        if (textoPromo) textoPromo.style.display = 'block'; // Oculto en mobile por CSS si fuera necesario, pero aquí lo forzamos a block
+      }
+    };
+
+    // Inicializar Netlify Identity
+    if (window.netlifyIdentity) {
+      // Al cargar la página, revisamos si ya hay usuario
+      window.netlifyIdentity.on("init", user => gestionarVisibilidad(user));
+
+      // Al iniciar sesión
+      window.netlifyIdentity.on("login", user => {
+        gestionarVisibilidad(user);
+        netlifyIdentity.close(); // Cerrar ventana emergente
+      });
+
+      // Al cerrar sesión
+      window.netlifyIdentity.on("logout", () => gestionarVisibilidad(null));
+    }
+  </script>
+
+</body>
+
+</html>
