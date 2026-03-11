@@ -41,7 +41,7 @@ export default function App() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   /**
-   * ✅ PRO SaaS: track which items were manually edited by the user.
+   * Track which items were manually edited by the user.
    * If an item is "touched", auto-calculation will NOT overwrite it.
    */
   const [touchedIds, setTouchedIds] = useState<Set<string>>(new Set());
@@ -116,7 +116,7 @@ export default function App() {
   };
 
   /**
-   * ✅ Auto-calculate defaults when guests / hunger / selection changes,
+   * Auto-calculate defaults when guests / hunger / selection changes,
    * BUT do NOT overwrite anything the user manually edited (touchedIds).
    */
   useEffect(() => {
@@ -170,7 +170,7 @@ export default function App() {
       }
     }
 
-    // ✅ ENSALADAS (kg por persona)
+    // Ensaladas (kg por persona)
     if (selectedItemIds.has('ensalada-chilena')) {
       recommended['ensalada-chilena'] = Number((totalPeople * 0.2).toFixed(1));
     }
@@ -184,7 +184,7 @@ export default function App() {
       recommended['choclo-con-palmitos'] = Number((totalPeople * 0.2).toFixed(1));
     }
 
-    // ✅ ACOMPAÑAMIENTOS (kg por persona)
+    // Acompañamientos (kg por persona)
     if (selectedItemIds.has('papas-mayo')) {
       recommended['papas-mayo'] = Number((totalPeople * 0.25).toFixed(1));
     }
@@ -416,11 +416,8 @@ export default function App() {
   // Derived state for filtering
   const meatItems = FOOD_ITEMS.filter(i => i.category === 'meat');
   const appItems = FOOD_ITEMS.filter(i => i.category === 'appetizer');
-
-  // ✅ new categories inside "sides" tab
   const saladItems = FOOD_ITEMS.filter(i => i.category === 'ensaladas');
   const accompanimentItems = FOOD_ITEMS.filter(i => i.category === 'acompanamientos');
-
   const drinkItems = FOOD_ITEMS.filter(i => i.category === 'drink');
   const piscoItems = FOOD_ITEMS.filter(i => i.category === 'pisco');
   const beerItems = FOOD_ITEMS.filter(i => i.category === 'beer');
@@ -477,11 +474,9 @@ export default function App() {
 
     titleMeat: language === 'es' ? 'Cortes Parrilleros' : 'Grill Cuts',
     titleApp: language === 'es' ? 'Embutidos y Previa' : 'Sausages & Starters',
-
     titleSalads: language === 'es' ? 'Ensaladas' : 'Salads',
     titleAcomp: language === 'es' ? 'Acompañamientos' : 'Hearty Sides',
     acompSubtitle: language === 'es' ? 'Guarnición más contundente' : 'A more filling side dish',
-
     titleRed: language === 'es' ? 'Vinos Tintos' : 'Red Wines',
     titleWhite: language === 'es' ? 'Vinos Blancos' : 'White Wines',
     titleSparkling: language === 'es' ? 'Champaña' : 'Sparkling Wine',
@@ -840,8 +835,11 @@ export default function App() {
           {/* Right Column */}
           <div ref={summaryRef} className="lg:col-span-3 print:col-span-12 print:w-full scroll-mt-24">
             <SummaryPanel results={calculationResults} language={language} />
-            <MercenarioPanel data={mercenarioProfile} language={language} />
           </div>
+        </div>
+
+        <div className="mt-6 lg:mt-8 print:hidden">
+          <MercenarioPanel data={mercenarioProfile} language={language} />
         </div>
       </main>
 
