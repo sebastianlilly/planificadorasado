@@ -18,6 +18,8 @@ import { FOOD_ITEMS, CONSUMPTION_RATES, HUNGER_MULTIPLIER } from './constants';
 import Counter from './components/Counter';
 import FoodGrid from './components/FoodGrid';
 import SummaryPanel from './components/SummaryPanel';
+import MercenarioPanel from './components/MercenarioPanel';
+import { getMercenarioProfile } from './mercenarioProfile';
 
 // Helper to identify sausage items by ID for calculation logic
 const SAUSAGE_IDS = ['chorizo', 'longaniza', 'prietas', 'choricillo', 'vienesa', 'butifarra', 'chistorra'];
@@ -91,7 +93,6 @@ export default function App() {
   };
 
   const handleQuantityChange = (id: string, val: number) => {
-    // ✅ user edited manually → lock it from auto recalculation
     markTouched(id);
     setQuantities(prev => ({ ...prev, [id]: val }));
   };
@@ -123,14 +124,12 @@ export default function App() {
     const multiplier = HUNGER_MULTIPLIER[hunger];
     const totalPeople = men + women + children;
 
-    // Helper: only set recommended values if NOT touched
     const applyIfNotTouched = (next: Record<string, number>, id: string, value: number) => {
       if (!selectedItemIds.has(id)) return;
       if (touchedIds.has(id)) return;
       next[id] = value;
     };
 
-    // Compute recommended values
     const recommended: Record<string, number> = {};
 
     // 1) Meat needed (Multiplier applies only to adults)
@@ -142,7 +141,6 @@ export default function App() {
     if (selectedMeats.length > 0) {
       const weightPerItem = Number((rawMeatKg / selectedMeats.length).toFixed(1));
       selectedMeats.forEach(item => {
-        // recommended even split (won't overwrite if touched)
         recommended[item.id] = weightPerItem;
       });
     }
@@ -172,22 +170,30 @@ export default function App() {
       }
     }
 
-    // =========================
-    // ✅ ENSALADAS (kg por persona) — NO recalcular si el usuario tocó el input
-    // =========================
-    if (selectedItemIds.has('ensalada-chilena')) recommended['ensalada-chilena'] = Number((totalPeople * 0.2).toFixed(1)); // 200g
-    if (selectedItemIds.has('ensalada-hojas-verdes'))
-      recommended['ensalada-hojas-verdes'] = Number((totalPeople * 0.15).toFixed(1)); // 150g
-    if (selectedItemIds.has('apio-con-palta')) recommended['apio-con-palta'] = Number((totalPeople * 0.15).toFixed(1)); // 150g
-    if (selectedItemIds.has('choclo-con-palmitos'))
-      recommended['choclo-con-palmitos'] = Number((totalPeople * 0.2).toFixed(1)); // 200g
+    // ✅ ENSALADAS (kg por persona)
+    if (selectedItemIds.has('ensalada-chilena')) {
+      recommended['ensalada-chilena'] = Number((totalPeople * 0.2).toFixed(1));
+    }
+    if (selectedItemIds.has('ensalada-hojas-verdes')) {
+      recommended['ensalada-hojas-verdes'] = Number((totalPeople * 0.15).toFixed(1));
+    }
+    if (selectedItemIds.has('apio-con-palta')) {
+      recommended['apio-con-palta'] = Number((totalPeople * 0.15).toFixed(1));
+    }
+    if (selectedItemIds.has('choclo-con-palmitos')) {
+      recommended['choclo-con-palmitos'] = Number((totalPeople * 0.2).toFixed(1));
+    }
 
-    // ======================================
-    // ACOMPAÑAMIENTOS (kg por persona)
-    // ======================================
-    if (selectedItemIds.has('papas-mayo')) recommended['papas-mayo'] = Number((totalPeople * 0.25).toFixed(1)); // 250g
-    if (selectedItemIds.has('arroz-primavera')) recommended['arroz-primavera'] = Number((totalPeople * 0.08).toFixed(1)); // 80g dry
-    if (selectedItemIds.has('arroz-solo')) recommended['arroz-solo'] = Number((totalPeople * 0.08).toFixed(1)); // 80g dry
+    // ✅ ACOMPAÑAMIENTOS (kg por persona)
+    if (selectedItemIds.has('papas-mayo')) {
+      recommended['papas-mayo'] = Number((totalPeople * 0.25).toFixed(1));
+    }
+    if (selectedItemIds.has('arroz-primavera')) {
+      recommended['arroz-primavera'] = Number((totalPeople * 0.08).toFixed(1));
+    }
+    if (selectedItemIds.has('arroz-solo')) {
+      recommended['arroz-solo'] = Number((totalPeople * 0.08).toFixed(1));
+    }
 
     // 4) Wines
     const selectedWines = FOOD_ITEMS.filter(item => item.category === 'wine' && selectedItemIds.has(item.id));
@@ -236,7 +242,7 @@ export default function App() {
       const totalAdults = men + women;
       if (totalAdults > 0) {
         const totalIceKg = totalAdults * 1;
-        const bagsNeeded = Math.ceil(totalIceKg / 2); // bag 2kg
+        const bagsNeeded = Math.ceil(totalIceKg / 2);
         selectedIce.forEach(item => {
           recommended[item.id] = bagsNeeded;
         });
@@ -251,7 +257,7 @@ export default function App() {
         (children * CONSUMPTION_RATES.children.drink);
 
       if (drinksLiters > 0) {
-        const totalBottlesNeeded = Math.ceil(drinksLiters / 2.0); // 2L avg
+        const totalBottlesNeeded = Math.ceil(drinksLiters / 2.0);
         const bottlesPerType = Math.max(1, Math.ceil(totalBottlesNeeded / selectedDrinks.length));
         selectedDrinks.forEach(item => {
           recommended[item.id] = bottlesPerType;
@@ -259,11 +265,9 @@ export default function App() {
       }
     }
 
-    // ✅ Merge into quantities without overwriting touched items
     setQuantities(prev => {
       const next = { ...prev };
 
-      // apply all recommended values, respecting touched
       Object.entries(recommended).forEach(([id, value]) => {
         applyIfNotTouched(next, id, value);
       });
@@ -282,11 +286,13 @@ export default function App() {
       ((men * CONSUMPTION_RATES.men.meat) + (women * CONSUMPTION_RATES.women.meat)) * multiplier +
       (children * CONSUMPTION_RATES.children.meat);
 
-    const hasDrinksSelected = Array.from(selectedItemIds).some(id => FOOD_ITEMS.find(i => i.id === id)?.category === 'drink');
+    const hasDrinksSelected = Array.from(selectedItemIds).some(
+      id => FOOD_ITEMS.find(i => i.id === id)?.category === 'drink'
+    );
 
     const drinksLiters = hasDrinksSelected
       ? ((men * CONSUMPTION_RATES.men.drink) + (women * CONSUMPTION_RATES.women.drink)) * multiplier +
-      (children * CONSUMPTION_RATES.children.drink)
+        (children * CONSUMPTION_RATES.children.drink)
       : 0;
 
     let breadUnits = 0;
@@ -319,7 +325,7 @@ export default function App() {
         if (item.category === 'meat' || SAUSAGE_IDS.includes(item.id)) {
           totalGrillWeight += qty;
         } else if (item.id === 'provoleta') {
-          totalGrillWeight += qty * 0.15; // assume 150g each
+          totalGrillWeight += qty * 0.15;
         }
       }
     });
@@ -335,22 +341,36 @@ export default function App() {
       if (item && quantities[id] !== undefined) {
         let unit = 'kg';
 
-        // bread / provoleta
-        if (item.category === 'appetizer' && (item.id === 'marraqueta' || item.id === 'provoleta')) unit = 'unid';
+        if (item.category === 'appetizer' && (item.id === 'marraqueta' || item.id === 'provoleta')) {
+          unit = 'unid';
+        }
 
-        // meats + sausages
-        if (item.category === 'meat' || SAUSAGE_IDS.includes(item.id)) unit = 'kg';
+        if (item.category === 'meat' || SAUSAGE_IDS.includes(item.id)) {
+          unit = 'kg';
+        }
 
-        // drinks/wine/pisco/beer
-        if (item.category === 'wine' || item.category === 'drink' || item.category === 'pisco' || item.category === 'beer') unit = 'unid';
+        if (
+          item.category === 'wine' ||
+          item.category === 'drink' ||
+          item.category === 'pisco' ||
+          item.category === 'beer'
+        ) {
+          unit = 'unid';
+        }
 
-        // ice
-        if (item.category === 'ice') unit = 'bolsas';
+        if (item.category === 'ice') {
+          unit = 'bolsas';
+        }
 
-        // display overrides
-        if (item.category === 'wine' || item.category === 'pisco') unit = 'botellas';
-        if (item.category === 'beer') unit = 'latas/bot';
-        if (item.category === 'drink') unit = 'botellas';
+        if (item.category === 'wine' || item.category === 'pisco') {
+          unit = 'botellas';
+        }
+        if (item.category === 'beer') {
+          unit = 'latas/bot';
+        }
+        if (item.category === 'drink') {
+          unit = 'botellas';
+        }
 
         if (language === 'en') {
           if (unit === 'unid') unit = 'units';
@@ -378,6 +398,20 @@ export default function App() {
       meatDetails
     };
   }, [guests, hunger, quantities, selectedItemIds, isWindyOrLong, language]);
+
+  const mercenarioProfile = useMemo(() => {
+    const guestCount = guests.men + guests.women + guests.children;
+
+    return getMercenarioProfile({
+      selectedItemIds,
+      guestCount,
+      totalMeatKg: calculationResults.totalMeatKg,
+      totalBeefKg: calculationResults.totalBeefKg,
+      totalPorkKg: calculationResults.totalPorkKg,
+      totalChickenKg: calculationResults.totalChickenKg,
+      language
+    });
+  }, [selectedItemIds, guests, calculationResults, language]);
 
   // Derived state for filtering
   const meatItems = FOOD_ITEMS.filter(i => i.category === 'meat');
@@ -444,7 +478,6 @@ export default function App() {
     titleMeat: language === 'es' ? 'Cortes Parrilleros' : 'Grill Cuts',
     titleApp: language === 'es' ? 'Embutidos y Previa' : 'Sausages & Starters',
 
-    // ✅ split inside sides tab
     titleSalads: language === 'es' ? 'Ensaladas' : 'Salads',
     titleAcomp: language === 'es' ? 'Acompañamientos' : 'Hearty Sides',
     acompSubtitle: language === 'es' ? 'Guarnición más contundente' : 'A more filling side dish',
@@ -566,15 +599,21 @@ export default function App() {
                   <div className="flex h-16 w-full bg-surface-off p-1.5 rounded-xl border border-gray-200">
                     <button
                       onClick={() => setHunger('normal')}
-                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${hunger === 'normal' ? 'bg-white shadow-md text-primary ring-1 ring-black/5' : 'text-text-sub hover:text-text-main'
-                        }`}
+                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${
+                        hunger === 'normal'
+                          ? 'bg-white shadow-md text-primary ring-1 ring-black/5'
+                          : 'text-text-sub hover:text-text-main'
+                      }`}
                     >
                       {t.normal}
                     </button>
                     <button
                       onClick={() => setHunger('feroz')}
-                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${hunger === 'feroz' ? 'bg-white shadow-md text-primary ring-1 ring-black/5' : 'text-text-sub hover:text-text-main'
-                        }`}
+                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${
+                        hunger === 'feroz'
+                          ? 'bg-white shadow-md text-primary ring-1 ring-black/5'
+                          : 'text-text-sub hover:text-text-main'
+                      }`}
                     >
                       {t.feroz}
                     </button>
@@ -587,15 +626,21 @@ export default function App() {
                   <div className="flex h-16 w-full bg-surface-off p-1.5 rounded-xl border border-gray-200">
                     <button
                       onClick={() => setIsWindyOrLong(false)}
-                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${!isWindyOrLong ? 'bg-white shadow-md text-primary ring-1 ring-black/5' : 'text-text-sub hover:text-text-main'
-                        }`}
+                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${
+                        !isWindyOrLong
+                          ? 'bg-white shadow-md text-primary ring-1 ring-black/5'
+                          : 'text-text-sub hover:text-text-main'
+                      }`}
                     >
                       {t.no}
                     </button>
                     <button
                       onClick={() => setIsWindyOrLong(true)}
-                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${isWindyOrLong ? 'bg-white shadow-md text-primary ring-1 ring-black/5' : 'text-text-sub hover:text-text-main'
-                        }`}
+                      className={`flex-1 rounded-lg text-base sm:text-lg font-bold transition-all ${
+                        isWindyOrLong
+                          ? 'bg-white shadow-md text-primary ring-1 ring-black/5'
+                          : 'text-text-sub hover:text-text-main'
+                      }`}
                     >
                       {t.yes}
                     </button>
@@ -675,7 +720,6 @@ export default function App() {
                   />
                 )}
 
-                {/* Sides tab includes both */}
                 {activeTab === 'sides' && (
                   <>
                     <FoodGrid
@@ -796,6 +840,7 @@ export default function App() {
           {/* Right Column */}
           <div ref={summaryRef} className="lg:col-span-3 print:col-span-12 print:w-full scroll-mt-24">
             <SummaryPanel results={calculationResults} language={language} />
+            <MercenarioPanel data={mercenarioProfile} language={language} />
           </div>
         </div>
       </main>
@@ -842,11 +887,11 @@ const TabButton = ({
 }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-3 rounded-full text-sm sm:text-base font-bold transition-all
-      ${active
+    className={`flex items-center gap-2 px-4 py-3 rounded-full text-sm sm:text-base font-bold transition-all ${
+      active
         ? 'bg-primary text-white shadow-md shadow-primary/20 scale-105'
         : 'bg-white border border-gray-200 text-text-main hover:bg-gray-50'
-      }`}
+    }`}
   >
     {icon}
     {label}
