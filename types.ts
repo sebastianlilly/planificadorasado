@@ -1,5 +1,15 @@
 
-export type Category = 'meat' | 'appetizer' | 'sides' | 'wine' | 'pisco' | 'drink' | 'ice' | 'beer';
+export type Category =
+  | 'meat'
+  | 'appetizer'
+  | 'sides'
+  | 'ensaladas'
+  | 'acompanamientos'
+  | 'wine'
+  | 'pisco'
+  | 'drink'
+  | 'ice'
+  | 'beer';
 
 export type IconType = 'beef' | 'pork' | 'chicken' | 'sausage' | 'bread' | 'salad' | 'cheese' | 'fire' | 'chorizo' | 'wine' | 'soda' | 'pisco' | 'ice' | 'beer';
 
