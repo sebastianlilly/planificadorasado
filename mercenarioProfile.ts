@@ -116,19 +116,19 @@ export function getMercenarioProfile({
 
   let herramienta: MercenarioCard = {
     title: isSpanish ? 'Tu Herramienta Recomendada' : 'Your Recommended Tool',
-    value: isSpanish ? 'Tabla de asado Taller Amable' : 'Taller Amable serving board',
+    value: isSpanish ? 'Tabla de corte resistente' : 'Sturdy cutting board',
     description: isSpanish
-      ? 'Te sirve para presentar mejor, ordenar los cortes y elevar la experiencia.'
-      : 'Use it to present better, organize the cuts and elevate the experience.',
+      ? 'Te ayuda a ordenar los cortes, servir mejor y mantener una estación de trabajo limpia.'
+      : 'It helps you organize the cuts, serve better and keep a clean prep station.',
   };
 
   if (guestCount >= 8) {
     herramienta = {
       title: isSpanish ? 'Tu Herramienta Recomendada' : 'Your Recommended Tool',
-      value: isSpanish ? 'Tabla grande de servicio Taller Amable' : 'Large Taller Amable serving board',
+      value: isSpanish ? 'Superficie amplia de servicio' : 'Large serving surface',
       description: isSpanish
-        ? 'Cuando sube la escala del asado, necesitas superficie, orden y presencia.'
-        : 'As the BBQ scales up, you need surface area, order and presence.',
+        ? 'Cuando el asado crece, necesitas espacio para ordenar, cortar y presentar sin colapsar.'
+        : 'As the BBQ scales up, you need room to organize, carve and serve without chaos.',
     };
   }
 
