@@ -1,4 +1,3 @@
-
 export type Category =
   | 'meat'
   | 'appetizer'
@@ -11,7 +10,21 @@ export type Category =
   | 'ice'
   | 'beer';
 
-export type IconType = 'beef' | 'pork' | 'chicken' | 'sausage' | 'bread' | 'salad' | 'cheese' | 'fire' | 'chorizo' | 'wine' | 'soda' | 'pisco' | 'ice' | 'beer';
+export type IconType =
+  | 'beef'
+  | 'pork'
+  | 'chicken'
+  | 'sausage'
+  | 'bread'
+  | 'salad'
+  | 'cheese'
+  | 'fire'
+  | 'chorizo'
+  | 'wine'
+  | 'soda'
+  | 'pisco'
+  | 'ice'
+  | 'beer';
 
 export interface FoodItem {
   id: string;
@@ -42,5 +55,4 @@ export interface CalculationResult {
   totalBeerUnits: number;
   breadUnits: number;
   meatDetails: { name: string; amount: string }[];
-  otherItems: string[]; // ✅ NUEVO
 }
